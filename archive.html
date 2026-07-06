@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>외계천체 모음집 & 명예의 전당</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body class="archive-body" style="background: #010811; color: white; padding: 30px; font-family: sans-serif;">
+
+    <header style="text-align: center; margin-bottom: 40px;">
+        <h1 style="color: #2ecc71; font-size: 2.5rem;"> 외계 천체 모음집</h1>
+        <p style="color: #aaa; margin-top: 10px;">이용자들이 등록한 가상 행성 모음집입니다.</p>
+        <button onclick="location.href='index.html'" style="background: #555; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">🏠 인트로 화면으로</button>
+    </header>
+
+    <!-- 🏆 명예의 전당 섹션 (Hall of Fame) -->
+    <section style="max-width: 1200px; margin: 0 auto 5px auto; background: rgba(255, 215, 0, 0.03); border: 1px solid rgba(255, 215, 0, 0.2); border-radius: 20px; padding: 25px;">
+        <h2 style="text-align: center; color: #ffd700; margin-bottom: 25px; font-size: 1.6rem; letter-spacing: 2px;">제 2의 지구 (TOP 3)</h2>
+        <div id="podiumContainer" style="display: flex; justify-content: center; align-items: flex-end; gap: 20px; min-height: 220px; flex-wrap: wrap;">
+            <p style="color: #ffa500;">데이터를 분석하여 순위를 매기는 중입니다...</p>
+        </div>
+    </section>
+
+    <hr style="border: 0; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); margin: 40px 0;">
+
+    <!-- 전체 행성 목록 그리드 -->
+    <h2 style="max-width: 1200px; margin: 0 auto 20px auto; font-size: 1.3rem; color: #888;">📁 전체 등록 행성 목록</h2>
+    <div id="archiveGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto;">
+        <p id="loadingText" style="text-align: center; grid-column: 1/-1; color: #ff9900; font-size: 1.2rem;">⚡ 실시간 데이터베이스 동기화 중...</p>
+    </div>
+
+    <!-- 팝업 오버레이 화면 (모달 구조 유지) -->
+    <div id="detailModal" style="display: none; position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); justify-content: center; align-items: center; z-index: 9999;">
+        <div style="background: #0b132b; border: 1px solid #2ecc71; width: 90%; max-width: 900px; border-radius: 20px; padding: 30px; position: relative; box-shadow: 0 0 50px rgba(46, 204, 113, 0.3);">
+            <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: #ff3300; color: white; border: none; font-size: 1.2rem; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold;">X</button>
+            <h2 id="modalCustomName" style="color: #2ecc71; font-size: 2.2rem; margin-bottom: 5px;">행성 이름</h2>
+            <p id="modalStarInfo" style="color: #888; font-size: 0.95rem; margin-bottom: 20px;">부모 항성 계 정보</p>
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
+                    <div id="modalCanvasContainer" style="width: 100%; height: 300px; background: #010811; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;"></div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-around;">
+                        <div style="text-align: center;"><div style="width:30px; height:30px; background: radial-gradient(circle at 30% 30%, #7befb2, #2ecc71); border-radius: 50%; margin: 0 auto 5px;"></div><span style="font-size:0.8rem; color:#aaa;">지구</span></div>
+                        <div style="font-size: 1.5rem; color:#444;">VS</div>
+                        <div style="text-align: center;"><div id="modal2DCircle" style="width:30px; height:30px; border-radius: 50%; margin: 0 auto 5px;"></div><span style="font-size:0.8rem; color:#aaa;">실제 스케일 비 대조</span></div>
+                    </div>
+                </div>
+                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
+                    <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; padding: 20px; border-radius: 15px; text-align: center;">
+                        <span id="modalHabitabilityLevel" style="font-size: 1.1rem; font-weight: bold; color: white; display: block; margin-bottom: 5px;">거주 가능성 등급</span>
+                        <h3 id="modalHabitabilityScore" style="font-size: 3.2rem; color: #2ecc71; margin: 0; font-weight: 900;">0%</h3>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.02); border-radius: 10px; overflow: hidden;">
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 반지름</td><td id="mRad" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 질량</td><td id="mMass" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">공전 궤도 반경</td><td id="mOrbit" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 평균 밀도</td><td id="mDens" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">부모 항성 복사량</td><td id="mInsol" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr><td style="padding: 12px; color: #aaa;">행성 평형 온도</td><td id="mTemp" style="text-align: right; font-weight: bold; color: #ff9900;">-</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="archive.js"></script>
+</body>
+</html>
