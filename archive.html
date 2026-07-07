@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5, user-scalable=no">
+    <!-- 모바일에서도 무조건 PC 화면 해상도(1200px) 기준으로 렌더링하도록 강제 설정 -->
+    <meta name="viewport" content="width=1200, initial-scale=0.1, maximum-scale=2.0, user-scalable=yes">
     
     <title>외계천체 모음집 & 명예의 전당</title>
     <link rel="stylesheet" href="style.css">
@@ -15,7 +16,7 @@
     <header style="text-align: center; margin-bottom: 40px;">
         <h1 style="color: #2ecc71; font-size: 2.5rem;"> 외계 천체 모음집</h1>
         <p style="color: #aaa; margin-top: 10px;">이용자들이 등록한 가상 행성 모음집입니다.</p>
-        <button onclick="location.href='index.html'" style="background: #555; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">🏠 인트로 화면으로</button>
+        <button onclick="location.href='index.html'" style="background: #555; color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; cursor: pointer;">🏠메인으로</button>
     </header>
 
     <!-- 🏆 명예의 전당 섹션 (Hall of Fame) -->
@@ -34,14 +35,18 @@
         <p id="loadingText" style="text-align: center; grid-column: 1/-1; color: #ff9900; font-size: 1.2rem;">⚡ 실시간 데이터베이스 동기화 중...</p>
     </div>
 
-    <!-- 팝업 오버레이 화면 (모달 구조 유지) -->
+    <!-- 팝업 오버레이 화면 (모달 구조 내부 - 외계인 우측 배치 완료) -->
     <div id="detailModal" style="display: none; position: fixed; top:0; left:0; width:100vw; height:100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); justify-content: center; align-items: center; z-index: 9999;">
-        <div style="background: #0b132b; border: 1px solid #2ecc71; width: 90%; max-width: 900px; border-radius: 20px; padding: 30px; position: relative; box-shadow: 0 0 50px rgba(46, 204, 113, 0.3);">
-            <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; background: #ff3300; color: white; border: none; font-size: 1.2rem; border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-weight: bold;">X</button>
+        <div style="background: #0b132b; border: 1px solid #2ecc71; width: 90%; max-width: 950px; border-radius: 20px; padding: 30px; position: relative; box-shadow: 0 0 50px rgba(46, 204, 113, 0.3);">
+            <button onclick="closeModal()" style="position: absolute; top: 20px; right: 20px; color: white; background-color: #e74c3c; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;">X</button>
             <h2 id="modalCustomName" style="color: #2ecc71; font-size: 2.2rem; margin-bottom: 5px;">행성 이름</h2>
             <p id="modalStarInfo" style="color: #888; font-size: 0.95rem; margin-bottom: 20px;">부모 항성 계 정보</p>
-            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
+            
+            <!-- flex 컨테이너 -->
+            <div style="display: flex; gap: 30px; flex-wrap: wrap; align-items: center;">
+                
+                <!-- 왼쪽: 3D 뷰어 및 크기 대조 (flex: 1.2로 확대 배치) -->
+                <div style="flex: 1.2; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
                     <div id="modalCanvasContainer" style="width: 100%; height: 300px; background: #010811; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;"></div>
                     <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 15px; border-radius: 12px; display: flex; align-items: center; justify-content: space-around;">
                         <div style="text-align: center;"><div style="width:30px; height:30px; background: radial-gradient(circle at 30% 30%, #7befb2, #2ecc71); border-radius: 50%; margin: 0 auto 5px;"></div><span style="font-size:0.8rem; color:#aaa;">지구</span></div>
@@ -49,23 +54,48 @@
                         <div style="text-align: center;"><div id="modal2DCircle" style="width:30px; height:30px; border-radius: 50%; margin: 0 auto 5px;"></div><span style="font-size:0.8rem; color:#aaa;">실제 스케일 비 대조</span></div>
                     </div>
                 </div>
-                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
-                    <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; padding: 20px; border-radius: 15px; text-align: center;">
-                        <span id="modalHabitabilityLevel" style="font-size: 1.1rem; font-weight: bold; color: white; display: block; margin-bottom: 5px;">거주 가능성 등급</span>
-                        <h3 id="modalHabitabilityScore" style="font-size: 3.2rem; color: #2ecc71; margin: 0; font-weight: 900;">0%</h3>
+
+                <!-- 오른쪽: 스펙 테이블 및 외계인 댄스 컴포넌트 -->
+                <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
+                    
+                    <!-- 생명체 포착 외계인 영역 -->
+                    <div id="modalAlienBox" style="display: none; background: rgba(11, 19, 43, 0.5); border: 1px solid rgba(46, 204, 113, 0.3); padding: 12px; border-radius: 15px; text-align: center; position: relative;">
+                        <div style="background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 8px; box-shadow: 0 0 10px rgba(46,204,113,0.2);">
+                            생명체 포착! 👾
+                        </div>
+                        <div style="height: 95px; display: flex; justify-content: center; align-items: center;">
+                            <img id="modalAlienImg" src="" alt="외계인" class="alien-bounce-archive" style="height: 90px; width: auto;">
+                        </div>
                     </div>
-                    <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.02); border-radius: 10px; overflow: hidden;">
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 반지름</td><td id="mRad" style="text-align: right; font-weight: bold;">-</td></tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 질량</td><td id="mMass" style="text-align: right; font-weight: bold;">-</td></tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">공전 궤도 반경</td><td id="mOrbit" style="text-align: right; font-weight: bold;">-</td></tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">행성 평균 밀도</td><td id="mDens" style="text-align: right; font-weight: bold;">-</td></tr>
-                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 12px; color: #aaa;">부모 항성 복사량</td><td id="mInsol" style="text-align: right; font-weight: bold;">-</td></tr>
-                        <tr><td style="padding: 12px; color: #aaa;">행성 평형 온도</td><td id="mTemp" style="text-align: right; font-weight: bold; color: #ff9900;">-</td></tr>
+
+                    <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid #2ecc71; padding: 15px; border-radius: 15px; text-align: center;">
+                        <span id="modalHabitabilityLevel" style="font-size: 1rem; font-weight: bold; color: white; display: block; margin-bottom: 3px;">거주 가능성 등급</span>
+                        <h3 id="modalHabitabilityScore" style="font-size: 2.8rem; color: #2ecc71; margin: 0; font-weight: 900;">0%</h3>
+                    </div>
+
+                    <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.02); border-radius: 10px; overflow: hidden; font-size: 0.95rem;">
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px; color: #aaa;">행성 반지름</td><td id="mRad" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px; color: #aaa;">행성 질량</td><td id="mMass" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px; color: #aaa;">공전 궤도 반경</td><td id="mOrbit" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px; color: #aaa;">행성 평균 밀도</td><td id="mDens" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 10px; color: #aaa;">부모 항성 복사량</td><td id="mInsol" style="text-align: right; font-weight: bold;">-</td></tr>
+                        <tr><td style="padding: 10px; color: #aaa;">행성 평형 온도</td><td id="mTemp" style="text-align: right; font-weight: bold; color: #ff9900;">-</td></tr>
                     </table>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- 🕺 외계인 둠칫둠칫 애니메이션 스타일 정의 -->
+    <style>
+        .alien-bounce-archive {
+            animation: archiveAlienDance 0.7s ease-in-out infinite alternate;
+        }
+        @keyframes archiveAlienDance {
+            0% { transform: translateY(0) scaleX(1) rotate(-6deg); }
+            100% { transform: translateY(-12px) scaleX(0.96) rotate(6deg); }
+        }
+    </style>
 
     <script src="archive.js"></script>
 </body>
