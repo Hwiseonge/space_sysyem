@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <!-- 모바일에서도 무조건 PC 화면 해상도(1200px) 기준으로 렌더링하도록 강제 설정 -->
-    <<meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=1200, initial-scale=0.1, maximum-scale=2.0, user-scalable=yes">
     
     <title>외계행성 거주 가능성 분석 - 가상 생성 모드</title>
     <link rel="stylesheet" href="style.css">
@@ -10,34 +10,42 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <style>
-        /* 둠칫둠칫 몸을 흔드는 외계인 애니메이션 */
+        /* 둠칫둠칫 몸을 흔드는 외계인 애니메이션 (상단 배치 및 크기 2배 적용) */
         .alien-dancer-container {
             position: fixed;
-            bottom: 40px;
-            left: 40px;
+            top: 40px; 
+            left: 50%;
+            transform: translateX(-50%); 
             z-index: 9999;
             pointer-events: none;
-            display: none; /* 초기에는 숨김 */
+            display: none; 
             text-align: center;
         }
         .alien-img {
-            width: 120px;
+            width: 240px; 
             height: auto;
             animation: alienBounce 0.8s ease-in-out infinite alternate;
         }
         .alien-bubble {
             background: rgba(46, 204, 113, 0.9);
             color: #000;
-            padding: 8px 12px;
+            padding: 12px 20px;
             border-radius: 15px;
             font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+            font-size: 1.2rem; 
+            margin-bottom: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         @keyframes alienBounce {
             0% { transform: translateY(0) scaleX(1) rotate(-8deg); }
             100% { transform: translateY(-15px) scaleX(0.95) rotate(8deg); }
+        }
+
+        /* 모바일 환경에서만 3D 화면 세로 높이를 대폭 늘려주는 반응형 스타일 */
+        @media screen and (max-width: 768px) {
+            #canvas-container {
+                height: 600px !important; 
+            }
         }
     </style>
 </head>
@@ -171,9 +179,10 @@
     <section class="card step-section" id="sec-save">
         <h2>📝 발견된 외계행성 명명</h2>
         
-        <div style="display: flex; gap: 10px; margin-top: 15px;">
-            <input type="text" id="studentClassInfo" placeholder="학번 (ex: 31110)" style="flex: 1; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
-            <input type="text" id="studentNameInfo" placeholder="탐사자 이름 (ex: 성소휘)" style="flex: 1; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
+        <!-- flex-direction을 column으로 변경하여 화면 밖으로 튀어나가지 않고 아래로 배치되도록 수정 -->
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+            <input type="text" id="studentClassInfo" placeholder="학번 (ex: 31110)" style="width: 100%; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
+            <input type="text" id="studentNameInfo" placeholder="탐사자 이름 (ex: 성소휘)" style="width: 100%; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
         </div>
         <div style="color: gray; margin-top: 6px; font-size: 0.85rem;">학급·이름 정보는 상품 추첨용으로만 사용되며, 리더보드에는 등록되지 않습니다.</div>
         
@@ -181,7 +190,7 @@
             <input type="text" id="customPlanetName" placeholder="새로운 행성의 이름을 지어주세요 (ex: 원주-2026b)" style="flex: 2; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
             <button id="saveDbBtn" style="background: #2ecc71; border: none; color: white; border-radius: 8px; padding: 0 25px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s;">🚀 데이터베이스 등록</button>
         </div>
-        <p id="saveStatus" style="margin-top: 10px; color: #aaa; font-size: 0.9rem;"></p>
+        <p id="saveStatus" style="margin-top: 10px; color: #aaa; font-size: 0.9remexport;"></p>
         
         <div style="text-align: center; margin-top: 30px; width: 100%;">
             <button onclick="location.href='index.html'" class="btn" style="background: #555; width: 200px; padding: 14px 0; font-size: 1rem; font-weight: bold; border: none; border-radius: 8px; color: white; cursor: pointer;">
