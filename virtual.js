@@ -61,7 +61,6 @@ function activateSection(sectionId) {
 function resetSections() {
     const sections = document.querySelectorAll('.step-section');
     sections.forEach(sec => sec.classList.remove('active'));
-    // 외계인 레이어도 초기화 시점에 숨김
     document.getElementById("live-alien-dancer").style.display = "none";
 }
 
@@ -272,30 +271,30 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
     document.getElementById("habitabilityLevel").innerText = "거주 가능성 : " + level;
     if(reason.length === 0) reason.push("거주 가능성 조건 충족");
     document.getElementById("habitabilityReason").innerHTML = reason.join("<br>");
-//// ==========================================================================
-    // 👽 외계인 등장을 위한 핵심 제어 파트 (우하단 고정 강제 주입 추가)
+
+    // ==========================================================================
+    // 👽 외계인 등장을 위한 핵심 제어 파트 (상단 중앙 고정 및 확대 전면 수정)
     // ==========================================================================
     let hasAlien = score >= 60;
     let chosenAlienNum = 0;
 
     if (hasAlien) {
-        // 외계인 1부터 7까지 무작위 선택
         chosenAlienNum = Math.floor(Math.random() * 7) + 1;
         const alienDancerBox = document.getElementById("live-alien-dancer");
         const alienImgTag = document.getElementById("live-alien-img");
         
-        // 🌟 HTML의 기존 style을 무시하고 오른쪽 아래에 박아버림
-        alienDancerBox.style.position = "fixed";   // 화면 전체 기준 고정
-        alienDancerBox.style.bottom = "00px";       // 바닥에서 25px 띄움
-        alienDancerBox.style.right = "25px";        // 우측에서 25px 띄움
-        alienDancerBox.style.top = "auto";          // 혹시 상단 고정이 걸려있을 수 있으니 초기화
-        alienDancerBox.style.left = "auto";         // 혹시 좌측 고정이 걸려있을 수 있으니 초기화
-        alienDancerBox.style.zIndex = "9999";       // 3D 화면을 가리지 않도록 맨 위 레이어로 설정
+        alienDancerBox.style.position = "fixed";  
+        alienDancerBox.style.top = "40px";         
+        alienDancerBox.style.left = "50%";         
+        alienDancerBox.style.transform = "translateX(-50%)"; 
+        alienDancerBox.style.bottom = "auto";     
+        alienDancerBox.style.right = "auto";      
+        alienDancerBox.style.zIndex = "9999";      
 
-        // 이미지 경로를 '외계인폴더/외계인1.png' 형식으로 연결
         alienImgTag.src = `외계인폴더/외계인${chosenAlienNum}.png`;
-        alienDancerBox.style.display = "block"; // 화면에 둠칫둠칫 등장시키기
+        alienDancerBox.style.display = "block";
     }
+    
     finalCalculatedData = {
         starName: generatedPlanetData.hostname || "Unknown Star",
         starSpec: currentStarSpec,
@@ -310,8 +309,8 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
         equilibriumTemp: Math.round(temp),
         score: score,
         level: level,
-        hasAlien: hasAlien,            // 💾 유무 정보 저장[cite: 3]
-        alienNumber: chosenAlienNum,   // 💾 무작위 결정된 번호 저장 (모음집 연동용)[cite: 3]
+        hasAlien: hasAlien,           
+        alienNumber: chosenAlienNum,  
         timestamp: new Date().toISOString()
     };
 
