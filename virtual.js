@@ -252,10 +252,14 @@ async function calculatePlanet(){
 // ==========================
 // 거주 가능성 평가 및 그래픽 인터페이스 연동 (UI 왼쪽 정렬 보정 버전)
 // ==========================
+// ==========================================
+// 거주 가능성 평가 및 그래픽 인터페이스 연동 (G형 항성 최적 조건 반영 버전)
+// ==========================================
 async function calculateHabitability(radius, mass, orbit, density, insol, temp){
-    // 텍스트 전체를 정렬하기 위해, 시작할 때 스타일이 들어간 감싸는 div 태그를 넣어줍니다.
+    // 텍스트 전체를 정렬하기 위해 스타일이 들어간 감싸는 div 태그 주입
     let reason = ["<div style='text-align: left; max-width: 450px; margin: 0 auto; line-height: 1.6; font-size: 0.95rem;'>"];
     
+    // 부모 항성의 스펙트럼 타입 파악
     let starSpec = "G";
     if (typeof generatedPlanetData !== "undefined" && generatedPlanetData) {
         starSpec = generatedPlanetData.st_spectype || "G"; 
@@ -265,6 +269,7 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
             const teff = parseFloat(currentPlanet.st_teff);
             if (teff < 3700) starSpec = "M";
             else if (teff < 5200) starSpec = "K";
+            else if (teff < 6000) starSpec = "G"; // G형 방어 코드 추가
         }
     }
 
@@ -328,26 +333,26 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
     reason.push("<hr style='border:0; border-top:1px dashed #555; margin:12px 0;'>");
 
     // -----------------------------------------------------
-    // 🌌 [조건 2 & 3 통합] 조합 점수 (최대 80점)
+    // 🌌 [조건 2 & 3 통합] G형 항성 최적화 조합 점수 (최대 80점)
     // -----------------------------------------------------
     reason.push("<h4 style='margin-bottom: 8px; color: #00cec9;'>[2] 우주 환경 조합 점수 (항성종류 + 골디락스존)</h4>");
     
     let combination_score = 0;
-    const isMType = starSpec.includes("M");
+    const isGType = starSpec.includes("G"); // 💡 M형에서 G형으로 변경
     const isKType = starSpec.includes("K");
 
-    if (in_hz && isMType) {
+    if (in_hz && isGType) {
         combination_score = 80;
-        reason.push("🌟 <b style='color: #2ecc71;'>최적 환경 만족:</b> M형 왜성 & 골디락스존 안착 (+80.00점)");
+        reason.push("🌟 <b style='color: #2ecc71;'>최적 환경 만족:</b> G형 항성 & 골디락스존 안착 (+80.00점)"); // 💡 UI 출력 텍스트 G형으로 변경
     } else if (in_hz && isKType) {
         combination_score = 50;
         reason.push("✨ <b style='color: #f1c40f;'>안정 환경 만족:</b> K형 항성 & 골디락스존 안착 (+50.00점)");
     } else {
         combination_score = 0;
-        reason.push("⚠️ <b>환경 조합 부적합:</b> M형·K형 항성이 아니거나 골디락스존을 벗어남 (+0.00점)");
+        reason.push("⚠️ <b>환경 조합 부적합:</b> G형·K형 항성이 아니거나 골디락스존을 벗어남 (+0.00점)"); // 💡 안내 문구 변경
     }
 
-    // 감싸는 div 태그를 닫아줍니다.
+    // 감싸는 div 태그 닫기
     reason.push("</div>");
 
     // -----------------------------------------------------
@@ -365,10 +370,8 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
     document.getElementById("habitabilityScore").innerText = displayScore + "%";
     document.getElementById("habitabilityLevel").innerText = "거주 가능성 : " + level;
     
-    // 조립된 세부 리스트 로그를 화면에 주입 (줄바꿈 <br> 처리 제거 후 자연스럽게 연결)
     document.getElementById("habitabilityReason").innerHTML = reason.join("<br>").replace(/<br><div/g, "<div").replace(/<\/div><br>/g, "</div>");
 
-    // 이후 시뮬레이션 인터페이스 코드 연동은 기존과 동일
     activateSection('sec-habitability');
     
     if (typeof finalCalculatedData !== "undefined") {
