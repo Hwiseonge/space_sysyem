@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <!-- 모바일에서도 무조건 PC 화면 해상도(1200px) 기준으로 렌더링하도록 강제 설정 -->
-     <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, maximum-scale=1.0, user-scalable=no">
     
     <title>외계행성 거주 가능성 분석 - 가상 생성 모드</title>
     <link rel="stylesheet" href="style.css">
@@ -22,7 +22,7 @@
             text-align: center;
         }
         .alien-img {
-            width: 240px; 
+            width: 200px; 
             height: auto;
             animation: alienBounce 0.8s ease-in-out infinite alternate;
         }
@@ -41,19 +41,14 @@
             100% { transform: translateY(-15px) scaleX(0.95) rotate(8deg); }
         }
 
-        /* 모바일 환경에서만 3D 화면 세로 높이를 대폭 늘려주는 반응형 스타일 */
-        @media screen and (max-width: 768px) {
-            #canvas-container {
-                height: 600px !important; 
-            }
-        }
+      
     </style>
 </head>
 <body>
 
     <!-- 화면에 등장할 무작위 외계인 댄서 팝업 구조 -->
     <div id="live-alien-dancer" class="alien-dancer-container">
-        <div class="alien-bubble">안녕하세요hi! 여기서 살게요 감사합니다😍</div>
+        <div class="alien-bubble">거주하기 좋은!ww 👽</div>
         <img id="live-alien-img" src="" alt="외계인" class="alien-img">
     </div>
 
@@ -182,13 +177,13 @@
         <!-- flex-direction을 column으로 변경하여 화면 밖으로 튀어나가지 않고 아래로 배치되도록 수정 -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
             <input type="text" id="studentClassInfo" placeholder="학번 (ex: 31110)" style="width: 100%; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
-            <input type="text" id="studentNameInfo" placeholder="탐사자 이름 (ex: 홍길동)" style="width: 100%; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
+            <input type="text" id="studentNameInfo" placeholder="탐사자 이름 (ex: 성소휘)" style="width: 100%; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
         </div>
         <div style="color: gray; margin-top: 6px; font-size: 0.85rem;">학급·이름 정보는 상품 추첨용으로만 사용되며, 리더보드에는 등록되지 않습니다.</div>
         
         <div style="display: flex; gap: 10px; margin-top: 12px; align-items: stretch;">
-            <input type="text" id="customPlanetName" placeholder="새로운 행성의 이름을 지어주세요)" style="flex: 2; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
-            <button id="saveDbBtn" style="background: #2ecc71; border: none; color: white; border-radius: 8px; padding: 0 25px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s;">🚀 정보 등록</button>
+            <input type="text" id="customPlanetName" placeholder="새로운 행성의 이름을 지어주세요 (ex: 원주-2026b)" style="flex: 2; padding: 16px; border-radius: 8px; border: 1px solid rgba(226, 135, 67, 0.4); background: #111; color: #fff; font-size: 1rem; box-sizing: border-box;">
+            <button id="saveDbBtn" style="background: #2ecc71; border: none; color: white; border-radius: 8px; padding: 0 25px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s;">🚀 데이터베이스 등록</button>
         </div>
         <p id="saveStatus" style="margin-top: 10px; color: #aaa; font-size: 0.9remexport;"></p>
         
