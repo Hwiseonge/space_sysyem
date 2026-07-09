@@ -511,6 +511,7 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
     // 텍스트 전체를 정렬하기 위해 스타일이 들어간 감싸는 div 태그 주입
     let reason = ["<div style='text-align: left; max-width: 450px; margin: 0 auto; line-height: 1.6; font-size: 0.95rem;'>"];
     
+    // 부모 항성의 스펙트럼 타입 파악 (currentPlanet 구조 대응 및 방어 코드)
     let starSpec = "G";
     if (typeof currentPlanet !== "undefined" && currentPlanet) {
         starSpec = currentPlanet.st_spectype || "Unknown";
@@ -518,88 +519,54 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
             const teff = parseFloat(currentPlanet.st_teff);
             if (teff < 3700) starSpec = "M";
             else if (teff < 5200) starSpec = "K";
+            else if (teff < 6000) starSpec = "G";
         }
     }
 
-    // -----------------------------------------------------
-    // 🌍 [조건 1] 행성 물리량 일치도 세부 점수 계산 (최대 20점)
-    // -----------------------------------------------------
+    // [조건 1] 행성 물리량 일치도 세부 점수 계산 (반지름, 질량, 궤도, 온도, 밀도 로직 유지)
     reason.push("<h4 style='margin-bottom: 8px; color: #00cec9;'>[1] 행성 물리량 세부 점수 (지구 일치도)</h4>");
-
-    // 1) 반지름
-    let score_r = 0; 
-    if (radius >= 0.5 && radius <= 3.0) {
-        score_r = 3 * (1 - Math.abs(radius - 1) / 2.0);
-        reason.push(`📐 <b>반지름:</b> ${score_r.toFixed(2)} / 3.00점 (현재: ${radius.toFixed(2)} R⊕)`);
-    } else {
-        reason.push(`❌ <b>반지름 범위 초과:</b> 0.00 / 3.00점 (현재: ${radius.toFixed(2)} R⊕ / 기준: 0.5~3.0배)`);
-    }
-
-    // 2) 질량
-    let score_m = 0; 
-    if (mass >= 0.3 && mass <= 10.0) {
-        score_m = 5 * (1 - Math.abs(mass - 1) / 9.0);
-        reason.push(`⚖️ <b>질량:</b> ${score_m.toFixed(2)} / 5.00점 (현재: ${mass.toFixed(2)} M⊕)`);
-    } else {
-        reason.push(`❌ <b>질량 범위 초과:</b> 0.00 / 5.00점 (현재: ${mass.toFixed(2)} M⊕ / 기준: 0.3~10.0배)`);
-    }
+    let score_r = (radius >= 0.5 && radius <= 3.0) ? 3 * (1 - Math.abs(radius - 1) / 2.0) : 0;
+    reason.push(score_r > 0 ? `📐 <b>반지름:</b> ${score_r.toFixed(2)} / 3.00점 (현재: ${radius.toFixed(2)} R⊕)` : `❌ <b>반지름 범위 초과:</b> 0.00 / 3.00점 (현재: ${radius.toFixed(2)} R⊕ / 기준: 0.5~3.0배)`);
+    
+    let score_m = (mass >= 0.3 && mass <= 10.0) ? 5 * (1 - Math.abs(mass - 1) / 9.0) : 0;
+    reason.push(score_m > 0 ? `⚖️ <b>질량:</b> ${score_m.toFixed(2)} / 5.00점 (현재: ${mass.toFixed(2)} M⊕)` : `❌ <b>질량 범위 초과:</b> 0.00 / 5.00점 (현재: ${mass.toFixed(2)} M⊕ / 기준: 0.3~10.0배)`);
 
     let in_hz = (insol >= 0.35 && insol <= 1.75);
+    let score_o = in_hz ? 1 * (1 - Math.min(Math.abs(orbit - 1) / 2.0, 1)) : 0;
+    reason.push(score_o > 0 ? `💫 <b>궤도 장반경:</b> ${score_o.toFixed(2)} / 1.00점 (현재: ${orbit.toFixed(2)} AU)` : `❌ <b>궤도 장반경 이탈:</b> 0.00 / 1.00점 (현재: ${orbit.toFixed(2)} AU / 골디락스존 외)`);
 
-    // 3) 궤도 장반경
-    let score_o = 0; 
-    if (in_hz) {
-        score_o = 1 * (1 - Math.min(Math.abs(orbit - 1) / 2.0, 1));
-        reason.push(`💫 <b>궤도 장반경:</b> ${score_o.toFixed(2)} / 1.00점 (현재: ${orbit.toFixed(2)} AU)`);
-    } else {
-        reason.push(`❌ <b>궤도 장반경 이탈:</b> 0.00 / 1.00점 (현재: ${orbit.toFixed(2)} AU / 골디락스존 외)`);
-    }
+    let score_t = (temp >= 200 && temp <= 350) ? 7 * (1 - Math.abs(temp - 275) / 75.0) : 0;
+    reason.push(score_t > 0 ? `🌡️ <b>평형 온도:</b> ${score_t.toFixed(2)} / 7.00점 (현재: ${temp.toFixed(0)} K)` : `❌ <b>평형 온도 범위 초과:</b> 0.00 / 7.00점 (현재: ${temp.toFixed(0)} K / 기준: 200~350K)`);
 
-    // 4) 표면 온도
-    let score_t = 0; 
-    if (temp >= 200 && temp <= 350) {
-        score_t = 7 * (1 - Math.abs(temp - 275) / 75.0);
-        reason.push(`🌡️ <b>평형 온도:</b> ${score_t.toFixed(2)} / 7.00점 (현재: ${temp.toFixed(0)} K)`);
-    } else {
-        reason.push(`❌ <b>평형 온도 범위 초과:</b> 0.00 / 7.00점 (현재: ${temp.toFixed(0)} K / 기준: 200~350K)`);
-    }
-
-    // 5) 평균밀도
-    let score_d = 0; 
-    if (density >= 0.5 && density <= 1.5) {
-        score_d = 4 * (1 - Math.abs(density - 1) / 0.5);
-        reason.push(`🧱 <b>평균 밀도:</b> ${score_d.toFixed(2)} / 4.00점 (현재: ${density.toFixed(2)} ρ⊕)`);
-    } else {
-        reason.push(`❌ <b>평균 밀도 범위 초과:</b> 0.00 / 4.00점 (현재: ${density.toFixed(2)} ρ⊕ / 기준: 0.5~1.5배)`);
-    }
+    let score_d = (density >= 0.5 && density <= 1.5) ? 4 * (1 - Math.abs(density - 1) / 0.5) : 0;
+    reason.push(score_d > 0 ? `🧱 <b>평균 밀도:</b> ${score_d.toFixed(2)} / 4.00점 (현재: ${density.toFixed(2)} ρ⊕)` : `❌ <b>평균 밀도 범위 초과:</b> 0.00 / 4.00점 (현재: ${density.toFixed(2)} ρ⊕ / 기준: 0.5~1.5배)`);
 
     let cond1_score = score_r + score_m + score_o + score_t + score_d;
     if (cond1_score >= 20) cond1_score = 19.99;
+    reason.push(`<b style='color: #ffeaa7;'>└ 🌍 물리량 합계 점수:</b> ${cond1_score.toFixed(2)} / 20.00점`);
     reason.push("<hr style='border:0; border-top:1px dashed #555; margin:12px 0;'>");
 
-    // -----------------------------------------------------
-    // 🌌 [조건 2 & 3 통합] 조합 점수 (최대 80점)
-    // -----------------------------------------------------
+    // 🌌 [조건 2 & 3 통합] 조합 점수 (★M형에서 G형으로 전면 교체★)
     reason.push("<h4 style='margin-bottom: 8px; color: #00cec9;'>[2] 우주 환경 조합 점수 (항성종류 + 골디락스존)</h4>");
     
     let combination_score = 0;
-    const isMType = starSpec.includes("M");
+    const isGType = starSpec.includes("G"); // 💡 G형 체크
     const isKType = starSpec.includes("K");
 
-    if (in_hz && isMType) {
+    if (in_hz && isGType) {
         combination_score = 80;
-        reason.push("🌟 <b style='color: #2ecc71;'>최적 환경 만족:</b> M형 왜성 & 골디락스존 안착 (+80.00점)");
+        reason.push("🌟 <b style='color: #2ecc71;'>최적 환경 만족:</b> G형 항성 & 골디락스존 안착 (+80.00점)");
     } else if (in_hz && isKType) {
         combination_score = 50;
         reason.push("✨ <b style='color: #f1c40f;'>안정 환경 만족:</b> K형 항성 & 골디락스존 안착 (+50.00점)");
     } else {
         combination_score = 0;
-        reason.push("⚠️ <b>환경 조합 부적합:</b> M형·K형 항성이 아니거나 골디락스존을 벗어남 (+0.00점)");
+        reason.push("⚠️ <b>환경 조합 부적합:</b> G형·K형 항성이 아니거나 골디락스존을 벗어남 (+0.00점)");
     }
 
     reason.push("</div>");
 
-    // 최종 점수 합산
+    // 최종 점수 계산 및 UI 반영 (나머지 뒷부분 기존 코드와 동일)
     let total_score = cond1_score + combination_score;
     total_score = Math.max(0, Math.min(99.99, total_score));
     let displayScore = total_score.toFixed(2);
@@ -620,31 +587,28 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
     const starTemp = parseFloat(currentPlanet.st_teff);
     const starLum = Math.pow(starRadius, 2) * Math.pow(starTemp/5778, 4);
     
-    // 3D 뷰어 엔진 및 HUD 동기화 업데이트 호출
     updateThreeJSScene(radius, density, temp, total_score, starRadius, starLum, orbit, starTemp);
     update2DHUD(radius, mass, orbit, temp, density);
 
-    // 👽 [외계인 상단 등장 확률 세팅] 점수 60점 이상일 때 100% 확률 무작위 등장
-    let hasAlien = total_score >= 80;
+    let hasAlien = total_score >= 60;
     const alienDancerBox = document.getElementById("live-alien-dancer");
     const alienImgTag = document.getElementById("live-alien-img");
     
     if (hasAlien && alienDancerBox && alienImgTag) {
         let chosenAlienNum = Math.floor(Math.random() * 7) + 1;
-        alienDancerBox.style.display = "block";
+        alienDancerBox.style.position = "fixed";  
+        alienDancerBox.style.top = "40px";         
+        alienDancerBox.style.left = "50%";         
+        alienDancerBox.style.transform = "translateX(-50%)"; 
+        alienDancerBox.style.zIndex = "9999";      
         alienImgTag.src = `외계인폴더/외계인${chosenAlienNum}.png`;
+        alienDancerBox.style.display = "block";
     } else {
         if (alienDancerBox) alienDancerBox.style.display = "none";
+        if (typeof createAlien === "function") createAlien(total_score, density, temp, mass);
     }
 
-    // 하단 컴포넌트 예외 처리 안전 기동
-    if (document.getElementById("alien")) {
-        createAlien(total_score, density, temp, mass);
-    }
-    if (document.getElementById("massSlider")) {
-        setupTerraform(radius, mass, orbit);
-    }
-
+    if (typeof setupTerraform === "function") setupTerraform(radius, mass, orbit);
     activateSection('sec-simulation');
 
     if (renderer) {
@@ -654,13 +618,6 @@ async function calculateHabitability(radius, mass, orbit, density, insol, temp){
         renderer.setSize(container.clientWidth, container.clientHeight);
     }
 }
-
-// ==========================================
-// 3D 그래픽 엔진 (궤도 장반경 제한 전면 해제 버전)
-// ==========================================
-// ========================================================
-// 3D 그래픽 엔진 (관측된 진짜 궤도 장반경 100% 무조건 반영 버전)
-// ========================================================
 function updateThreeJSScene(radius, density, temp, score, starRadius, starLum, orbit, starTemp) {
     if (!scene) return;
 
