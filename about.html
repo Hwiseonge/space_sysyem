@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=0.6, maximum-scale=1.0, user-scalable=no">
     <title>About - Exoplanet Exploration Engine</title>
-    
+
     <!-- 공통 메인 스타일시트 연결 -->
     <link rel="stylesheet" href="style.css">
     
@@ -19,22 +19,59 @@
             margin-bottom: 20px;
         }
 
-        /* ========================================================
-           ⚠️ [오류 해결 핵심] 서브 섹션 탭 전환용 디스플레이 제어
-           ======================================================== */
+        /* 서브 섹션 탭 전환용 디스플레이 제어 */
         .sub-section {
-            display: none; /* 평소에는 화면에서 아예 숨김 */
+            display: none;
             opacity: 0;
         }
         
         .sub-section.active {
-            display: block; /* active 클래스가 붙은 탭만 화면에 표시 */
+            display: block;
             animation: subFadeIn 0.5s ease-out forwards;
         }
 
         @keyframes subFadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🍀 3번째 탭 정밀 정렬 보정용 전용 스타일 디자인 */
+        .eval-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+            text-align: left;
+        }
+        .eval-card {
+            background: rgba(255,255,255,0.02); 
+            border: 1px solid rgba(46, 204, 113, 0.2); 
+            border-radius: 8px; 
+            padding: 14px;
+        }
+        .eval-card strong {
+            color: #2ecc71;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+        .eval-card p {
+            font-size: 0.85rem !important;
+            color: #ccc !important;
+            line-height: 1.5 !important;
+            margin: 0 !important;
+        }
+        .alien-alert-box {
+            grid-column: span 2;
+            background: rgba(46, 204, 113, 0.08);
+            border: 1px dashed #2ecc71;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            color: #2ecc71;
+            font-size: 0.95rem;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.1);
         }
     </style>
 </head>
@@ -49,7 +86,7 @@
         </button>
     </div>
 
-    <!-- 🚀 대헤더 (index.html 컨셉 상속) -->
+    <!-- 🚀 대헤더 -->
     <header>
         <div class="agency-tag">Wonju Girls' High School</div>
         <h1>프로젝트 소개</h1>
@@ -60,7 +97,7 @@
         <!-- 프로젝트 목표 / 과정 / 평가 인터랙티브 카드 -->
         <section class="section-container">
             
-            <!-- 상단 제어 탭 메뉴 (3개로 확장) -->
+            <!-- 상단 제어 탭 메뉴 -->
             <div class="tab-menu" style="display: flex; gap: 10px; margin-bottom: 20px;">
                 <button id="tab-goal" class="tab-btn active" onclick="switchSubSection('goal')">🎯 (1) 생명체 거주 가능성 판별</button>
                 <button id="tab-process" class="tab-btn" onclick="switchSubSection('process')">⚙️ (2) 물리량 역산 과정</button>
@@ -76,110 +113,97 @@
                         <h3>주 목적: 외계 생명체의 거주 가능성 탐구!</h3>
                         <p>본 엔진은 외계 천체의 물리량 역산으로, 지구에서 간측된 한정적인 망원경 데이터(식현상 및 시선속도 변동)로부터 행성의 질량, 반지름, 공전 궤도 등의 고유 물리량을 도출하고, 이를 기반으로 거주 가능성 판정 및 3D 시각화를 수행하기 위해 제작되었습니다. </p>
                         
-                          <!-- 3대 조건 하이라이트 박스 -->
+                        <!-- 3대 조건 하이라이트 박스 -->
                         <div class="highlight-box">
                             <h4>💡 거주 가능성을 판정하기 위한 3대 핵심 요소</h4>
                             <ul class="clean-list">
                                 <li>
-                                    <strong >① 행성의 고유 물리량 검증[구해야 할 값]</strong><p></p>
+                                    <strong>① 행성의 고유 물리량 값</strong><p></p>
                                     <span class="desc">역산된 행성의 반지름과 질량을 융합해 평균 밀도를 연산하고, 가스성 천체가 아닌 인간이 발을 디딜 수 있는 고체 표면의 <b>'암석형(지구형) 행성'</b>인지 판정합니다.</span>
                                 </li>
                                 <li>
-                                    <strong>② <span style="color:rgb(77, 169, 255)", onclick="showWordMeaning(event, '골디락스존', '행성 표면에 액체 상태의 물이 존재할 수 있는 적절한 거리의 영역,  행성이 부모항성에서 너무 가까우면 물이 모두 증발하고,너무 멀면 물이 얼어붙는다.')">골디락스존 </span> 존 위치 유무[주어진 값]</strong>
+                                    <strong>② <span style="color:rgb(77, 169, 255);" onclick="showWordMeaning(event, '골디락스존', '행성 표면에 액체 상태의 물이 존재할 수 있는 적절한 거리의 영역, 행성이 부모항성에서 너무 가까우면 물이 모두 증발하고,너무 멀면 물이 얼어붙는다.')">골디락스존 </span>내부 위치 </strong>
                                     <span class="desc">중심 항성의 광도를 기반으로 액체 상태의 물이 존재할 수 있는 표면 온도 구역(거주 가능 구역)을 계산하고, 해당 범위 내에 행성이 안착하여 공전하고 있는지 추적합니다.</span>
                                 </li>
                                 <li>
-                                    <strong>③ 부모 항성의 <span style="color:rgb(77, 169, 255)", onclick="showWordMeaning(event, '분광형', '별의 표면 온도와 빛의 스펙트럼 특성에 따라 별을 분류한 기준 , O B A F G K M 순으로 있으며 태양은 M형에 속함.')">분광형</span> 분석[주어진 값]</strong>
+                                    <!-- 🚨 [팩트 체크 완료] 태양 분광형 설명 G형으로 수정!! -->
+                                    <strong>③ 부모 항성의 <span style="color:rgb(77, 169, 255);" onclick="showWordMeaning(event, '분광형', '별의 표면 온도와 스펙트럼 특성에 따른 분류 기준입니다. O-B-A-F-G-K-M 순으로 낮아지며, 우리 태양은 노란색 빛을 내는 \'G형\' 항성에 속합니다.')">분광형</span> 분석</strong>
                                     <span class="desc">부모 항성의 고유 표면 온도와 색상(분광형)을 파악하여, 행성계 전체에 쏟아지는 복사 에너지의 기본 세기와 행성 대기 평형 온도에 미치는 변수를 종합 평가합니다.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     
-                    <!-- 우측 하단 다음 가기 버튼 -->
                     <div style="text-align: right; margin-top: 25px;">
                         <button class="next-slide-btn" onclick="switchSubSection('process')">다음 (과정 보기) ➡️</button>
                     </div>
                 </div>
 
-
-          <!-- [서브 섹션 B] 탐사 및 분석 과정 -->
+                <!-- [서브 섹션 B] 탐사 및 분석 과정 -->
                 <div id="sub-process" class="sub-section">
                     <div class="content-box">
-                        <h3><strong>① 행성의 고유 물리량 값</strong>을 위한<span style="color:rgb(77, 169, 255)", onclick="showWordMeaning(event, '역산과정', '역산 = 결과나 관측값으로부터 원래의 물리량이나 원인을 거꾸로 계산하는 것.')">역산 과정! </span> </h3>
+                        <h3><strong>① 행성의 고유 물리량 값</strong>을 위한 <span style="color:rgb(77, 169, 255);" onclick="showWordMeaning(event, '역산과정', '역산 = 결과나 관측값으로부터 원래의 물리량이나 원인을 거꾸로 계산하는 것.')">역산 과정! </span> </h3>
                         
-                        <!-- 전제 조건 가이드 박스 -->
                         <div class="premise-box">
                             <strong>📌 탐사 전제 조건 안내</strong><br>
                             지구의 고성능 천체 망원경으로 외계 행성계를 관측할 때, <u>부모 항성의 기본 제원(질량, 반지름 등)은 기확보했으나 행성의 물리적 수치는 전혀 모르는 상태</u>에서 출발합니다. 즉, 식현상으로 인한 광도 저하나 도플러 효과에 의한 시선속도 흔들림처럼 <b>망원경으로 간접 관측해 낸 힌트 데이터만 쥔 상태를 전제</b>로 역산 연산이 시작됩니다.
                         </div>
 
-                        <!-- 촘촘한 플로우차트 대시보드 -->
+                        <!-- 플로우차트 대시보드 -->
                         <div class="flowchart">
                             <div class="flow-step">
                                 <div class="step-num">01</div>
                                 <div class="step-txt">
-                                    <strong>간접 관측 데이터 확보</strong>
-                                    <small>항성 기본 스펙 기반, 행성 통과에 의한 빛 감소량 & 항성의 흔들림 속도 측정</small>
-                                </div>
+                                <strong>필터링한 관측 데이터 확보</strong>
+                                <small>Transit 관측법, 단일 항성계(Number of Stars=1), 검증된 외계행성만 추출</small>
+                            </div>
                             </div>
                             <div class="flow-arrow">⬇️</div>
-  <div class="flow-step">
-    <div class="step-num">02</div>
-    <div class="step-txt">
-        <strong>물리량 역산 과정 </strong>
-        <small>정방향 예측이 아닌, 관측된 결과치 플럭스에서 수식을 통해 본래의 물리량을 거꾸로 도출</small>
-        
-        <!-- ========================================================
-             🔬 역산 엔진에 사용된 6대 핵심 물리 공식 라인업 (한글 명칭 버전)
-             ======================================================== -->
-        <div class="formula-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; text-align: left;">
-            
-            <!-- 1. 식현상과 행성 반지름 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">① 행성 반지름 역산 (식현상)</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 반지름 = 항성 반지름 × √광도 감소량</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">행성이 별을 가릴 때 발생하는 빛의 감소 비율(식현상 깊이)을 분석하여 행성의 실제 크기를 도출</small>
-            </div>
+                            <div class="flow-step">
+                                <div class="step-num">02</div>
+                                <div class="step-txt">
+                                    <strong>물리량 역산 과정 </strong>
+                                    <small>정방향 예측이 아닌, 관측된 결과치 플럭스에서 수식을 통해 본래의 물리량을 거꾸로 도출</small>
+                                    
+                                    <div class="formula-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; text-align: left;">
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">① 행성 반지름 역산 (식현상)</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 반지름 = 항성 반지름 × √광도 감소량</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">행성이 별을 가릴 때 발생하는 빛의 감소 비율(식현상 깊이)을 분석하여 행성의 실제 크기를 도출</small>
+                                        </div>
 
-            <!-- 2. 시선속도와 행성 질량 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">② 행성 최소 질량 역산 (시선속도)</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 질량 ∝ 시선속도 변화량 × 항성 질량^(2/3) × 공전 주기^(1/3)</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">중력 인력으로 인해 흔들리는 부모 항성의 시선속도 크기와 공전 주기를 측정하여 행성의 최소 질량을 계산</small>
-            </div>
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">② 행성 최소 질량 역산 (시선속도)</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 질량 ∝ 시선속도 변화량 × 항성 질량^(2/3) × 공전 주기^(1/3)</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">중력 인력으로 인해 흔들리는 부모 항성의 시선속도 크기와 공전 주기를 측정하여 행성의 최소 질량을 계산</small>
+                                        </div>
 
-            <!-- 3. 케플러 제3법칙 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">③ 공전 궤도 장반경 (조화의 법칙)</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">공전 궤도 반지름^3 = 공전 주기^2 × 항성 질량</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">케플러 제3법칙(조화의 법칙)을 통해 관측된 행성의 공전 주기와 항성 무게로부터 둘 사이의 평균 거리를 산출</small>
-            </div>
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">③ 공전 궤도 장반경 (조화의 법칙)</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">공전 궤도 반지름^3 = 공전 주기^2 × 항성 질량</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">케플러 제3법칙(조화의 법칙)을 통해 관측된 행성의 공전 주기와 항성 무게로부터 둘 사이의 평균 거리를 산출</small>
+                                        </div>
 
-            <!-- 4. 부모 항성의 광도 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">④ 부모 항성의 절대 광도 연산</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">항성 광도 = 4π × 항성 반지름^2 × 슈테판상수 × 항성 온도^4</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">슈테판-볼츠만 법칙을 적용하여 부모 항성의 크기와 표면 온도로부터 별이 초당 방출하는 총 에너지를 계산</small>
-            </div>
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">④ 부모 항성의 절대 광도 연산</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">항성 광도 = 4π × 항성 반지름^2 × 슈테판상수 × 항성 온도^4</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">슈테판-볼츠만 법칙을 적용하여 부모 항성의 크기와 표면 온도로부터 별이 초당 방출하는 총 에너지를 계산</small>
+                                        </div>
 
-            <!-- 5. 행성 대기 평형 온도 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">⑤ 행성 대기 평형 온도 역산</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 온도 = 항성 온도 × √(항성 반지름 / (2 × 공전 궤도 반지름)) × (1 - 반사율)^(1/4)</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">별과 행성의 거리, 항성의 열에너지, 행성 표면의 빛 반사율을 종합하여 대기가 도달할 열평형 온도를 추정</small>
-            </div>
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">⑤ 행성 대기 평형 온도 역산</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 온도 = 항성 온도 × √(항성 반지름 / (2 × 공전 궤도 반지름)) × (1 - 반사율)^(1/4)</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">별과 행성의 거리, 항성의 열에너지, 행성 표면의 빛 반사율을 종합하여 대기가 도달할 열평형 온도를 추정</small>
+                                        </div>
 
-            <!-- 6. 행성 평균 밀도 -->
-            <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
-                <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">⑥ 행성 평균 밀도 및 성분 판정</span>
-                <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 밀도 = 행성 질량 / ((4/3) × π × 행성 반지름^3)</span>
-                <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">최종 역산된 질량과 부피를 이용해 평균 밀도를 구하고 목성형(가스)인지 지구형(암석)인지 판정</small>
-            </div>
-
-        </div>
-    </div>
-</div>
+                                        <div class="formula-card" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(106, 184, 255, 0.2); border-radius: 6px; padding: 10px 12px;">
+                                            <span style="color: #6ab8ff; font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 2px;">⑥ 행성 평균 밀도 및 성분 판정</span>
+                                            <span style="font-family: 'Courier New', monospace; color: #fff; font-size: 0.9rem; display: block; margin-bottom: 4px; letter-spacing: -0.5px;">행성 밀도 = 행성 질량 / ((4/3) × π × 행성 반지름^3)</span>
+                                            <small style="color: #aaa; font-size: 0.75rem; display: block; line-height: 1.3;">최종 역산된 질량과 부피를 이용해 평균 밀도를 구하고 목성형(가스)인지 지구형(암석)인지 판정</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="flow-arrow">⬇️</div>
                             <div class="flow-step">
@@ -187,7 +211,6 @@
                                 <div class="step-txt">
                                     <strong>계산된 물리량 확정</strong>
                                     <small>연산 수식 체인을 통과하여 행성의 실제 반지름, 질량, 공전 궤도 반경 데이터 결정</small>
-
                                 </div>
                             </div>
                         </div>
@@ -197,45 +220,65 @@
                     </div>
                 </div>
 
-                <!-- [서브 섹션 C] 거주 가능성 평가 (새로 이동해 온 04, 05단계) -->
+                <!-- 🍀 [서브 섹션 C] 거주 가능성 평가 -->
                 <div id="sub-eval" class="sub-section">
                     <div class="content-box">
-                       
-                    
-
                         <div class="flowchart">
-                            <div class="flow-step" >
-                                <div class="step-num" >04</div>
+                            
+                            <!-- 04단계 -->
+                            <div class="flow-step">
+                                <div class="step-num">04</div>
                                 <div class="step-txt">
-                                    <strong>거주 가능성 평가</strong>
-                                    <p>각 요소에 가중치 줘서 퍼센트로 계산</p>
-                                      <strong>① 행성의 고유 물리량 값-지구와의일치율) *0.2</strong>
-                        <strong>② 골디락스존 위치 유무(있으면1,없으면0) *0.4</strong>
-                        <strong>③ 부모항성의 분광형(M이면1,없으면0) * 0.4</strong>
-                        <strong>=> ??? %</strong>
+                                    <strong>거주 가능성 평가 알고리즘 수립</strong>
+                                    <small>조건 기반 가중치와 행성 물리량을 종합하여 최종 거주 가능성을 수치화합니다.</small>
+                                    
+                                    <div class="eval-grid">
+                                        <div class="eval-card">
+                                            <strong>① 행성 물리량 세부 배점 (최대 20점)</strong>
+                                            <p>
+                                                • 반지름 (3점) : 0.5 ~ 3.0 R⊕ 범위<br>
+                                                • 질량 (5점) : 0.3 ~ 10.0 M⊕ 범위<br>
+                                                • 궤도 장반경 (1점) : 골디락스 여부<br>
+                                                • 평형 온도 (7점) : 200 ~ 350 K 범위<br>
+                                                • 평균 밀도 (4점) : 0.5 ~ 1.5 ρ⊕ 범위<br>
+                                                <span style="color:#ff7675; font-size:0.75rem;">※ 범위를 이탈하면 해당 수치는 0점 처리</span>
+                                            </p>
+                                        </div>
+                                        <div class="eval-card">
+                                            <strong>② 우주 환경 가중치 배점 (최대 80점)</strong>
+                                            <!-- 🚨 [매핑 매치 완료] script.js 계산 로직(M형 80점, K형 50점)과 일치화 완료 -->
+                                            <p>
+                                                • 골디락스존 포함 + G형 왜성 ➔ <b>80점 부가</b><br>
+                                                • 골디락스존 포함 + K형 은하 항성 ➔ <b>50점 부가</b><br>
+                                                • 거주 구역 이탈 및 태양형 등 기타 분광형 ➔ <b>0점 부가</b>
+                                            </p>
+                                            <strong style="margin-top: 12px; color: #ffeaa7;">③ 최종 점수 합산 산출식</strong>
+                                            <p>물리량 점수(20점) + 환경 점수(80점)<br>➔ <b>최종 거주 가능성 (0% ~ 100%)</b></p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- 04 -> 05 연결 화살표 -->
                             <div class="flow-arrow">⬇️</div>
-                            <div class="flow-step" >
-                                <div class="step-num" >05</div>
+
+                            <!-- 05단계 -->
+                            <div class="flow-step">
+                                <div class="step-num">05</div>
                                 <div class="step-txt">
                                     <strong>행성 3D 그래픽 시각화</strong>
-                                    <small>Three.js WebGL 엔진을 연동하여 계산된 물리적 스케일, 항성과의 거리, 표면 환경 상태를 반영한 가상 행성 공간 구현 및 DB 등록</small>
+                                    <small>Three.js WebGL 엔진을 연동하여 계산된 물리적 스케일, 항성과의 실제 거리, 표면 환경 상태를 반영한 실시간 가상 행성 공간을 화면에 완벽하게 구현합니다.</small>
                                 </div>
-
-                                
                             </div>
-                             <div class="flow-step" >
-                             
-                                <div class="step-txt">
-                                    <strong>+ 거주가능성 80% 이상시 외계인 등장 기능!(가상데이터에서만)</strong>
-                                    
-                                </div>
 
-                                
+                            <!-- 05 -> 이스터에그 연결 화살표 -->
+                            <div class="flow-arrow">⬇️</div>
+
+                            <!-- 외계인 박스 -->
+                            <div class="alien-alert-box">
+                                👽 거주 가능성 평가 점수가 60% 이상을 달성할 시, 실시간 화면 상단에 '춤추는 외계인' 특별 레이어가 활성화됩니다!
                             </div>
-                            
-                            
+
                         </div>
                     </div>
                     <div style="text-align: left; margin-top: 25px;">
@@ -246,7 +289,6 @@
             </div>
         </section>
         
-        <!-- 💡 4) 계산 이론과 5) 사용된 데이터 카드가 들어설 공간 레이아웃 예약 -->
         <div id="about-theory-placeholder"></div>
         <div id="about-data-placeholder"></div>
     </main>
@@ -261,17 +303,14 @@
 <!-- ⚙️ 탭 전환 인터랙티브 자바스크립트 엔진 -->
 <script>
 function switchSubSection(type) {
-    // 1. 모든 서브 섹션 화면 비활성화 및 숨김
     document.getElementById('sub-goal').classList.remove('active');
     document.getElementById('sub-process').classList.remove('active');
     document.getElementById('sub-eval').classList.remove('active');
     
-    // 2. 상단 모든 탭 버튼 활성화 불빛 제거
     document.getElementById('tab-goal').classList.remove('active');
     document.getElementById('tab-process').classList.remove('active');
     document.getElementById('tab-eval').classList.remove('active');
 
-    // 3. 사용자가 누른 서브 타겟만 명확하게 활성화 전환
     if (type === 'goal') {
         document.getElementById('sub-goal').classList.add('active');
         document.getElementById('tab-goal').classList.add('active');
@@ -283,16 +322,12 @@ function switchSubSection(type) {
         document.getElementById('tab-eval').classList.add('active');
     }
 }
-// 단어 뜻 말풍선 팝업 띄우기
-function showWordMeaning(event, word, definition) {
-    // 이벤트 전파를 막아서 document 클릭 이벤트와 겹치지 않게 함
-    event.stopPropagation();
 
-    // 기존에 열려있는 말풍선 팝업이 있다면 먼저 제거
+function showWordMeaning(event, word, definition) {
+    event.stopPropagation();
     const prevTooltip = document.getElementById('word-tooltip-box');
     if (prevTooltip) prevTooltip.remove();
 
-    // 말풍선 레이아웃 생성
     const tooltip = document.createElement('div');
     tooltip.id = 'word-tooltip-box';
     tooltip.style = `
@@ -310,7 +345,6 @@ function showWordMeaning(event, word, definition) {
         word-break: keep-all;
     `;
 
-    // 안에 들어갈 내용 세팅 (단어 제목은 밝은 하늘색)
     tooltip.innerHTML = `
         <strong style="display:block; color:#6ab8ff; margin-bottom:4px;">💡 ${word}</strong>
         <span>${definition}</span>
@@ -318,17 +352,14 @@ function showWordMeaning(event, word, definition) {
 
     document.body.appendChild(tooltip);
 
-    // 클릭한 요소(span)의 화면상 절대 위치 계산
     const rect = event.target.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 
-    // 말풍선이 단어 바로 위에 위치하도록 좌표 설정 (단어 중앙 정렬 및 위로 8px 띄움)
     tooltip.style.left = (rect.left + scrollLeft + rect.width / 2 - tooltip.offsetWidth / 2) + 'px';
     tooltip.style.top = (rect.top + scrollTop - tooltip.offsetHeight - 8) + 'px';
 }
 
-// 화면의 다른 아무 곳이나 누르면 뜬 말풍선이 자동으로 닫히도록 설정
 document.addEventListener('click', function() {
     const tooltip = document.getElementById('word-tooltip-box');
     if (tooltip) tooltip.remove();
